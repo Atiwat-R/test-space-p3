@@ -1,0 +1,52 @@
+name: Build thumbnailer
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  BASE_IMG_NAME: ${{ github.repository }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v3
+    - name: Derive short SHA name
+      id: vars
+      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+    - name: Build the Docker image for Web Controller
+      run: |
+        cd milestone-2 && \
+        cd web-controller && \
+        docker build . --file Dockerfile \
+        --tag ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-web-controller:${{ steps.vars.outputs.sha_short }} \
+        --tag ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-web-controller:latest
+    - name: Build the Docker image for Extractor
+      run: |
+        cd milestone-2 && \
+        cd workers && \
+        cd extractor && \
+        docker build . --file Dockerfile \
+        --tag ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-extractor:${{ steps.vars.outputs.sha_short }} \
+        --tag ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-extractor:latest
+    - name: Build the Docker image for GIf Composer
+      run: |
+        cd milestone-2 && \
+        cd workers && \
+        cd gif-composer && \
+        docker build . --file Dockerfile \
+        --tag ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-gif-composer:${{ steps.vars.outputs.sha_short }} \
+        --tag ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-gif-composer:latest
+    - name: Publish the images
+      run: | 
+        docker push ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-web-controller:${{ steps.vars.outputs.sha_short }}
+        docker push ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-web-controller:latest
+        docker push ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-extractor:${{ steps.vars.outputs.sha_short }}
+        docker push ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-extractor:latest
+        docker push ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-gif-composer:${{ steps.vars.outputs.sha_short }}
+        docker push ghcr.io/${{ env.BASE_IMG_NAME }}/thumbnailer-gif-composer:latest
