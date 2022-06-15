@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gif-composer
+spec:
+  parallelism: 2
+  template:
+    metadata:
+      name: gif-composer
+    spec:
+      containers:
+        - name: gif-composer
+          image: gif-composer
+          imagePullPolicy: Never
+          env:
+            - name: IP
+              value: minio-service
+      restartPolicy: OnFailure
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: gif-composer
+#   labels:
+#     app: gif-composer
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: gif-composer
+#   template:
+#     metadata:
+#       labels:
+#         app: gif-composer
+#     spec:
+#       containers:
+#         - name: gif-composer
+#           image: gif
+#           imagePullPolicy: Never
+#           env:
+#             - name: IP
+#               value: minio-service
+#           ports:
+#             - containerPort: 3000
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: gif-composer-service
+# spec:
+#   selector:
+#     app: gif-composer
+#   ports:
+#     - port: 3000
+#       targetPort: 3000

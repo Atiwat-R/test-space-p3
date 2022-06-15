@@ -1,0 +1,5 @@
+minio
+ez_setup
+moviepy
+redis==3.3
+rq

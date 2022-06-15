@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="viewport=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Thumbnailer</title>
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <h1>Convert video to gif</h1>
+        <input type="file" id="selector" multiple />
+        <button onclick="upload()">Upload</button>
+        <div id="status">No uploads</div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script type="text/javascript">
+  function upload() {
+    let files = document.querySelector("#selector").files;
+    for (let i = 0; i < files.length; i++) {
+      retreiveNewURL(files[i], (file, url) => {
+        uploadFile(file, url);
+      });
+    }
+  }
+
+  function retreiveNewURL(file, upl) {
+    fetch(`/presignedUrl?name=${file.name}`)
+      .then((res) => {
+        res.text().then((url) => {
+          upl(file, url);
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }
+  function uploadFile(file, url) {
+    if (document.querySelector("#status").innerText === "No uploads") {
+      document.querySelector("#status").innerHTML = "";
+    }
+    fetch(url, {
+      method: "PUT",
+      body: file,
+    })
+      .then(() => {
+        document.querySelector(
+          "#status"
+        ).innerHTML += `<br>Uploaded ${file.name}.`;
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }
+</script>

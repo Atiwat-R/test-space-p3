@@ -1,0 +1,8 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: minio-storage
+provisioner: docker.io/hostpath
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  type: pd-ssd

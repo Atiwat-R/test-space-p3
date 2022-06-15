@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: flask
+  name: web-flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+        - name: flask
+          image: web-flask:v1
+          imagePullPolicy: Never
+          env:
+            # - name: minio-service
+            #   valueFrom:
+            #     fieldRef:
+            #       fieldPath:
+            - name: PREFIX
+              value: "/web"
+            - name: IP
+              value: minio-service
+              #  "http://localhost/minio-service:9000"
+          # - name: MINIO_ROOT_USER
+          #   value: "minio"
+          # - name: MINIO_ROOT_PASSWORD
+          #   value: "minio123"
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+status: {}
